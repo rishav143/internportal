@@ -11,7 +11,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(cors({
-    origin:["http://localhost:3001"],
+    origin:["https://internportal-gules.vercel.app"],
     credentials:true
 }))
 // use the client app
