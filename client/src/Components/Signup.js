@@ -14,7 +14,7 @@ export default function Signup() {
             setError("Please fill all fields")
             return;
         }
-        Axios.post("http://localhost:3000/auth/signup", {
+        Axios.post(`${process.env.REACT_APP_API_URL}/auth/signup`, {
             username,
             email,
             password

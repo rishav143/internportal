@@ -14,7 +14,7 @@ export default function Login({ setDisplay }) {
             setError("Please fill all the fields")
             return
         }
-        Axios.post("http://localhost:3000/auth/login", {
+        Axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
             email,
             password
         }).then(response => {

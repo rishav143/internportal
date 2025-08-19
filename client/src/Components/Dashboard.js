@@ -6,7 +6,7 @@ export default function Dashboard({ setDisplay }) {
     const [appliedOppurtunites, setAppliedOppurtunities] = useState([])
     const navigate = useNavigate()
     useEffect(() => {
-        axios.get("http://localhost:3000/auth/verify").then((res) => {
+        axios.get(`${process.env.REACT_APP_API_URL}/auth/verify`).then((res) => {
             if (!res.data.status) {
                 setDisplay(() => ({ profile: false }))
                 navigate("/login")
@@ -18,14 +18,14 @@ export default function Dashboard({ setDisplay }) {
     }, [navigate])
     const fetchAppliedOppurtunities = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/auth/applied-oppurtunities")
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/applied-oppurtunities`)
             setAppliedOppurtunities(response.data)
         } catch (error) {
 
         }
     }
     const handleLogout = () => {
-        axios.get("http://localhost:3000/auth/logout")
+        axios.get(`${process.env.REACT_APP_API_URL}/auth/logout`)
             .then((res) => {
                 if (res.data.status) {
                     setDisplay(() => ({ profile: false }))
@@ -38,7 +38,7 @@ export default function Dashboard({ setDisplay }) {
     function handleCancel(index) {
         try {
             const opportuniteToDelete = appliedOppurtunites[index]
-            axios.delete("http://localhost:3000/auth/applied-oppurtunities", {
+            axios.delete(`${process.env.REACT_APP_API_URL}/auth/applied-oppurtunities`, {
                 data: { id: opportuniteToDelete._id }
             }).catch((err)=> {
                 console.log(err)

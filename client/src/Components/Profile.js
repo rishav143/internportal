@@ -7,7 +7,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate()
   useEffect(() => {
-    axios.get('http://localhost:3000/auth/profile')
+    axios.get(`${process.env.REACT_APP_API_URL}/auth/profile`)
       .then(response => {
         if (!response.data.status) {
           navigate("/login")

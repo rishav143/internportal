@@ -21,8 +21,8 @@ app.use(cors({
 // });
 
 //connecting to mongobd using Mongoose
-// const dbURI = process.env.MONGODB_URI;
-mongoose.connect("mongodb://localhost:27017/internships")
+const dbURI = process.env.MONGODB_URI;
+mongoose.connect(dbURI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
