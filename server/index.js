@@ -11,10 +11,15 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(cors({
-  origin: ["https://internportal-gules.vercel.app"],
+  origin: [
+    "http://localhost:3000", 
+    "http://localhost:3001",
+    "https://internportal-gules.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
+// https://internportal-gules.vercel.app
 
 // use the client app
 // app.use(express.static(path.join(__dirname, 'build')));
@@ -29,6 +34,7 @@ mongoose.connect(dbURI)
     .catch(err => console.log(err));
 
 app.use("/auth", router)
-app.listen(3000, () => {
-    console.log("server is running on port 3000")
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`server is running on port ${PORT}`)
 })

@@ -27,9 +27,9 @@ router.post("/login", async (req, res) => {
     }
     const validPassword = await bcrypt.compare(password, user.password)
     if (!validPassword) {
-        return res.json({ message: "password is Incorrect" })
+        return res.status(401).json({ status: false, message: "Password is incorrect" })
     }
-    const token = jwt.sign({ email: user.email }, "jwtkey", { expiresIn: "4h" });
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET || "jwtkey", { expiresIn: "4h" });
     res.cookie("token", token)
     return res.json({ status: true, message: "Login Successfull", token })
 })
@@ -39,7 +39,7 @@ const verifyUser = async (req, res, next) => {
         if (!token) {
             return res.json({ status: false, message: "Auth Failed" })
         }
-        const decoded = await jwt.verify(token, "jwtkey")
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET || "jwtkey")
         req.user = decoded;
         next()
     } catch (error) {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import axios, { Axios } from "axios"
+import api from "../api"
 import { useNavigate } from 'react-router-dom'
 import styles from "../CSSModule/Dashboard.module.css"
 export default function Dashboard({ setDisplay }) {
     const [appliedOppurtunites, setAppliedOppurtunities] = useState([])
     const navigate = useNavigate()
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_API_URL}/auth/verify`).then((res) => {
+        api.get(`/auth/verify`).then((res) => {
             if (!res.data.status) {
                 setDisplay(() => ({ profile: false }))
                 navigate("/login")
@@ -18,14 +18,14 @@ export default function Dashboard({ setDisplay }) {
     }, [navigate])
     const fetchAppliedOppurtunities = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/applied-oppurtunities`)
+            const response = await api.get(`/auth/applied-oppurtunities`)
             setAppliedOppurtunities(response.data)
         } catch (error) {
 
         }
     }
     const handleLogout = () => {
-        axios.get(`${process.env.REACT_APP_API_URL}/auth/logout`)
+        api.get(`/auth/logout`)
             .then((res) => {
                 if (res.data.status) {
                     setDisplay(() => ({ profile: false }))
@@ -38,7 +38,7 @@ export default function Dashboard({ setDisplay }) {
     function handleCancel(index) {
         try {
             const opportuniteToDelete = appliedOppurtunites[index]
-            axios.delete(`${process.env.REACT_APP_API_URL}/auth/applied-oppurtunities`, {
+            api.delete(`/auth/applied-oppurtunities`, {
                 data: { id: opportuniteToDelete._id }
             }).catch((err)=> {
                 console.log(err)

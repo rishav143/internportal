@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import styles from '../CSSModule/Profile.module.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate()
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_URL}/auth/profile`)
+    api.get(`/auth/profile`)
       .then(response => {
         if (!response.data.status) {
           navigate("/login")
