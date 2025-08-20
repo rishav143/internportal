@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Axios from 'axios'
+import api from '../api'
 import { useNavigate } from 'react-router-dom'
 import styles from "../CSSModule/Signup.module.css"
 export default function Signup() {
@@ -14,7 +14,7 @@ export default function Signup() {
             setError("Please fill all fields")
             return;
         }
-        Axios.post(`${process.env.REACT_APP_API_URL}/auth/signup`, {
+        api.post(`/auth/signup`, {
             username,
             email,
             password
@@ -22,8 +22,9 @@ export default function Signup() {
             if (response.data.status) {
                 navigate("/login")
             }
-        }).catch(() => {
-            setError("Internal error occured, please try again.")
+        }).catch((err) => {
+            const message = err?.response?.data?.message || err?.message || "Internal error occured, please try again."
+            setError(message)
         })
     }
     return (
