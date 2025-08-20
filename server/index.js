@@ -7,9 +7,16 @@ const mongoose = require("mongoose")
 const router = require("./routes/user")
 const path = require('path');
 const cookieParser = require("cookie-parser")
+
+// Set NODE_ENV for production cookie settings
+if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'production'; // Default to production for deployed environments
+}
+
 app.use(bodyParser.json())
 app.use(cookieParser())
 
+// Enhanced CORS configuration for production
 app.use(cors({
   origin: [
     "http://localhost:3000", 
@@ -17,8 +24,11 @@ app.use(cors({
     "https://internportal-gules.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie']
 }));
+
 // https://internportal-gules.vercel.app
 
 // use the client app
@@ -37,4 +47,5 @@ app.use("/auth", router)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`)
+    console.log(`Environment: ${process.env.NODE_ENV}`)
 })
