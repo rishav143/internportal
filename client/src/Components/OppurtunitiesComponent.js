@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import oppurtunitiesData from "../opportunities.json"
-import api from "../api"
+import axios from "axios"
 import { useNavigate } from 'react-router-dom'
 import styles from "../CSSModule/Opportunites.module.css"
 export default function OppurtunitiesComponent() {
@@ -10,7 +10,7 @@ export default function OppurtunitiesComponent() {
   },[])
   const fetchAppliedOppurtunities=async()=>{
     try {
-      const response =await api.get(`/auth/applied-oppurtunities`)
+      const response =await axios.get(`${process.env.REACT_APP_API_URL}/auth/applied-oppurtunities`)
     setAppliedOppurtunities(response.data)
     } catch (error) {
       console.log(error)
@@ -44,7 +44,7 @@ const OppurtunityCard = ({oppurtunity,appliedOppurtunities})=>{
 
   const applyForOppurtunity= (oppurtunity)=>{
       try {
-         api.post(`/auth/apply`,{oppurtunity}).then((res)=>{
+         axios.post(`${process.env.REACT_APP_API_URL}/auth/apply`,{oppurtunity}).then((res)=>{
           console.log(res)
          })
          navigate("/dashboard")

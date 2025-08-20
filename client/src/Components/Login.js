@@ -1,33 +1,29 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from "../api"
+import Axios from "axios"
 import styles from "../CSSModule/Login.module.css"
 export default function Login({ setDisplay }) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const navigate = useNavigate()
-    
+    Axios.defaults.withCredentials = true
     const handleSubmit = (e) => {
         e.preventDefault()
         if (!email || !password) {
             setError("Please fill all the fields")
             return
         }
-        api.post(`/auth/login`, {
+        Axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
             email,
             password
         }).then(response => {
             if (response.data.status) {
                 setDisplay(() => ({ profile: true }))
                 navigate("/")
-            } else {
-                const message = response?.data?.message || "Login failed";
-                setError(message)
             }
         }).catch(err => {
-            const message = err?.response?.data?.message || err?.message || "An unexpected error occurred";
-            setError(message)
+            setError(err)
         })
     }
     return (

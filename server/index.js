@@ -11,11 +11,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(cors({
-  origin: [
-    "http://localhost:3000", 
-    "http://localhost:3001",
-    "https://internportal-gules.vercel.app"
-  ],
+  origin: ["http://localhost:3001"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -34,7 +30,6 @@ mongoose.connect(dbURI)
     .catch(err => console.log(err));
 
 app.use("/auth", router)
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`server is running on port ${PORT}`)
+app.listen(3000, () => {
+    console.log("server is running on port 3000")
 })
