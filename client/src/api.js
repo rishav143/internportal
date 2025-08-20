@@ -12,6 +12,18 @@ const api = axios.create({
     }
 });
 
+// Attach Authorization header if token exists
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token && !config.headers.Authorization) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 // Add request interceptor for debugging
 api.interceptors.request.use(
     (config) => {

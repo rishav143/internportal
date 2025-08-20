@@ -45,28 +45,28 @@ router.post("/login", async (req, res) => {
 })
 const verifyUser = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
-        console.log('Cookies received:', req.cookies);
-        console.log('Token found:', !!token);
-        
+        // Prefer Authorization header if present
+        const authHeader = req.headers.authorization || req.headers.Authorization;
+        let token = null;
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7);
+        } else {
+            token = req.cookies.token;
+        }
+
         if (!token) {
-            console.log('No token found in cookies');
             return res.status(401).json({ status: false, message: "Auth Failed - No token" })
         }
-        
         const decoded = await jwt.verify(token, process.env.JWT_SECRET || "jwtkey")
         req.user = decoded;
-        console.log('Token verified successfully for user:', decoded.email);
         next()
     } catch (error) {
-        console.log('Token verification error:', error.message);
         return res.status(401).json({ status: false, message: "Auth Failed - Invalid token" })
     }
 }
 router.post("/apply", verifyUser, async (req, res) => {
     try {
         const { oppurtunity } = req.body;
-        console.log(oppurtunity)
         const applyOppurtunity = new AppliedOppurtunity({
             userId: req.user.email,
             id: oppurtunity.id,
@@ -92,10 +92,8 @@ router.get("/applied-oppurtunities", verifyUser, async (req, res) => {
 })
 router.delete("/applied-oppurtunities", async (req, res) => {
     try {
-        console.log(req.body.id)
         const user = await AppliedOppurtunity.findOne({ _id: req.body.id })
         if (!user) {
-            console.log("error")
             return res.status(400).json({ message: "Opportunity does not exists !" })
         }
         const deleteOpportunity = await AppliedOppurtunity.deleteOne({ _id: req.body.id })
@@ -134,10 +132,6 @@ router.get('/profile', verifyUser, async (req, res) => {
 
 // Test endpoint to check cookie functionality
 router.get('/test-cookie', (req, res) => {
-    console.log('Test cookie endpoint hit');
-    console.log('All cookies:', req.cookies);
-    console.log('Token cookie:', req.cookies.token);
-    
     res.cookie('test', 'test-value', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -148,10 +142,8 @@ router.get('/test-cookie', (req, res) => {
     
     res.json({ 
         message: 'Test cookie set', 
-        cookies: req.cookies,
         environment: process.env.NODE_ENV,
         timestamp: new Date().toISOString()
     });
 });
-
 module.exports = router;
