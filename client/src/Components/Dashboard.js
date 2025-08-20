@@ -28,8 +28,6 @@ export default function Dashboard({ setDisplay }) {
         api.get(`/auth/logout`)
             .then((res) => {
                 if (res.data.status) {
-                    // Clear local token
-                    localStorage.removeItem('token')
                     setDisplay(() => ({ profile: false }))
                     navigate("/login")
                 }

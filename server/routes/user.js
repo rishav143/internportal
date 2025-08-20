@@ -29,44 +29,27 @@ router.post("/login", async (req, res) => {
     if (!validPassword) {
         return res.status(401).json({ status: false, message: "Password is incorrect" })
     }
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET || "jwtkey", { expiresIn: "4h" });
-    
-    // Set cookie with proper settings for cross-domain
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: isProduction, // true in production (HTTPS only)
-        sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-domain in production
-        maxAge: 4 * 60 * 60 * 1000, // 4 hours
-        path: '/'
-    });
-    
+    const token = jwt.sign({ email: user.email }, "jwtkey", { expiresIn: "4h" });
+    res.cookie("token", token)
     return res.json({ status: true, message: "Login Successfull", token })
 })
 const verifyUser = async (req, res, next) => {
     try {
-        // Prefer Authorization header if present
-        const authHeader = req.headers.authorization || req.headers.Authorization;
-        let token = null;
-        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-            token = authHeader.substring(7);
-        } else {
-            token = req.cookies.token;
-        }
-
+        const token = req.cookies.token;
         if (!token) {
-            return res.status(401).json({ status: false, message: "Auth Failed - No token" })
+            return res.json({ status: false, message: "Auth Failed" })
         }
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET || "jwtkey")
+        const decoded = await jwt.verify(token, "jwtkey")
         req.user = decoded;
         next()
     } catch (error) {
-        return res.status(401).json({ status: false, message: "Auth Failed - Invalid token" })
+        console.log(error)
     }
 }
 router.post("/apply", verifyUser, async (req, res) => {
     try {
         const { oppurtunity } = req.body;
+        console.log(oppurtunity)
         const applyOppurtunity = new AppliedOppurtunity({
             userId: req.user.email,
             id: oppurtunity.id,
@@ -92,8 +75,10 @@ router.get("/applied-oppurtunities", verifyUser, async (req, res) => {
 })
 router.delete("/applied-oppurtunities", async (req, res) => {
     try {
+        console.log(req.body.id)
         const user = await AppliedOppurtunity.findOne({ _id: req.body.id })
         if (!user) {
+            console.log("error")
             return res.status(400).json({ message: "Opportunity does not exists !" })
         }
         const deleteOpportunity = await AppliedOppurtunity.deleteOne({ _id: req.body.id })
@@ -106,13 +91,7 @@ router.get("/verify", verifyUser, (req, res) => {
     return res.json({ status: true, message: "Auth Successfull", user: req.user })
 })
 router.get("/logout", (req, res) => {
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        path: '/'
-    });
+    res.clearCookie('token')
     return res.json({ status: true, message: "Logged out successfully" })
 })
 
@@ -128,22 +107,5 @@ router.get('/profile', verifyUser, async (req, res) => {
     } catch (err) {
         return res.status(500).json({ message: 'Internal server error', error: err });
     }
-});
-
-// Test endpoint to check cookie functionality
-router.get('/test-cookie', (req, res) => {
-    res.cookie('test', 'test-value', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 60 * 1000, // 1 minute
-        path: '/'
-    });
-    
-    res.json({ 
-        message: 'Test cookie set', 
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-    });
 });
 module.exports = router;

@@ -6,8 +6,6 @@ import Login from './Components/Login'
 import OppurtunitiesComponent from './Components/OppurtunitiesComponent'
 import Dashboard from './Components/Dashboard'
 import Profile from './Components/Profile'
-import AuthTest from './Components/AuthTest'
-
 export default function App() {
   const [display, setDisplay] = useState({
     profile: false
@@ -22,7 +20,6 @@ export default function App() {
             <Route path='/signup' element={<Signup/>}/>
             <Route path='/dashboard' element={<Dashboard setDisplay={setDisplay}/>}/>
             <Route path="/profile" element={<Profile />} />
-            <Route path="/test" element={<AuthTest />} />
         </Routes>
      </BrowserRouter>
     </>

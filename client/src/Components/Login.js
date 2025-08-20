@@ -19,10 +19,6 @@ export default function Login({ setDisplay }) {
             password
         }).then(response => {
             if (response.data.status) {
-                // Save token for Authorization header fallback
-                if (response.data.token) {
-                    localStorage.setItem('token', response.data.token)
-                }
                 setDisplay(() => ({ profile: true }))
                 navigate("/")
             } else {
